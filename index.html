@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backhaul Wireless: Tri-Band, MIMO 4x4 e MLO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#0d9488', 
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        },
+                        beige: {
+                            pastel: '#fcf5e5',
+                        },
+                        slate: {
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+        .chart-container { position: relative; width: 100%; height: 350px; margin: auto; }
+        .glass-panel { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid #e2e8f0; }
+        .card-clickable { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .card-clickable:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); border-color: #0d9488; }
+        
+        .term-tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #0d9488;
+        }
+        .term-content {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            padding: 10px;
+            border-radius: 8px;
+            width: 240px;
+            font-size: 11px;
+            line-height: 1.4;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            font-weight: normal;
+            text-transform: none;
+        }
+        .term-tooltip:hover .term-content { visibility: visible; opacity: 1; }
+
+        .footer-img-popup {
+            position: relative;
+            display: inline;
+            color: #0d9488;
+            font-weight: 700;
+            cursor: help;
+            border-bottom: 1px dotted #0d9488;
+        }
+        .footer-img-content {
+            visibility: hidden;
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 12px;
+            border: 2px solid #0f172a;
+            width: 380px;
+            max-width: 80vw;
+            z-index: 1005;
+            opacity: 0;
+            transition: all 0.25s ease;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+        .footer-img-popup:hover .footer-img-content {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased pb-10">
+
+    <header class="bg-slate-900 text-white pt-10 pb-16 px-6 border-b-8 border-brand-500 relative z-30 text-left">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-brand-500/20 border border-brand-500/30 px-3 py-1 rounded mb-4 text-brand-500 font-bold text-xs uppercase tracking-widest">
+                <span>Elaborado em abril de 2026. Mês que vem muda tudo.</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black mb-4 leading-none tracking-tight text-white">Rede Doméstica</h1>
+            <p class="text-base md:text-lg text-white max-w-4xl leading-relaxed">
+                Streaming, Videoconferência, Gaming e Wi-Fi funcionando bem:<br>Rede Mesh — O que é interessante saber e preços de equipamentos.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 mt-12 relative z-20">
+        
+        <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4 text-left">
+            <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">CONCEITOS</h3>
+        </div>
+
+        <section class="mb-12 text-left">
+            <div class="flex flex-col space-y-6">
+                <div class="p-8 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-sm">
+                    <h3 class="font-bold text-emerald-800 text-xl mb-4 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <rect x="2" y="14" width="6" height="4" rx="1"></rect>
+                                <rect x="16" y="14" width="6" height="4" rx="1"></rect>
+                                <path d="M8 16h8" stroke-dasharray="2 2"></path>
+                                <path d="M12 16c0-4 2-6 5-6"></path>
+                                <path d="M12 16c0-4-2-6-5-6"></path>
+                            </svg>
+                        </span>
+                        Backhaul Wireless
+                    </h3>
+                    <p class="text-base text-emerald-900/80 leading-relaxed">
+                        A melhor solução é a interligação dos seus equipamentos de rede por cabo; mas cabos aparentes comprometem a estética.<br>A alternativa é a comunicação por ondas de rádio. Desvantagem: portas e paredes atrapalham, comprometendo a velocidade e aumentando a latência (atraso).<br>O termo Backhaul Wireless designa a comunicação por radiofrequência entre os equipamentos de rede — seja sinalização entre eles ou escoamento de tráfego.<br>Enquanto o famoso "Qual a senha do Wi-Fi?" refere-se à conexão de celulares, notebooks, consoles de jogos (e o que mais inventarem) ao equipamento de rede mais próximo.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-beige-pastel rounded-2xl border border-orange-100 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-xl mb-4 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-orange-200 text-orange-800 flex items-center justify-center mr-3 text-sm font-black tracking-tighter">TRI</span>
+                        Tri-Band vs Dual-Band
+                    </h3>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        Em sistemas Dual-Band, a comunicação entre os roteadores (Backhaul) compete com os seus aparelhos. No Tri-Band, existe uma via exclusiva para os roteadores, eliminando gargalos no Nó Secundário.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-brand-50 rounded-2xl border border-brand-100 shadow-sm">
+                    <h3 class="font-bold text-brand-700 text-xl mb-4 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center mr-3 text-sm font-black">4x4</span>
+                        Diversidade MIMO 4x4
+                    </h3>
+                    <p class="text-base text-brand-900/80 leading-relaxed">
+                        Paredes e portas são obstáculos para as frequências de 5 e 6GHz, mas quatro antenas tornam a conexão mais estável do que com duas e oferecem maior vazão de dados entre os nós da rede.
+                    </p>
+                </div>
+
+                <div class="p-8 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm">
+                    <h3 class="font-bold text-blue-700 text-xl mb-4 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3 text-sm font-black">MLO</span>
+                        Multi-Link Operation
+                    </h3>
+                    <p class="text-base text-blue-900/80 leading-relaxed">
+                        Agregação na 
+                        <span class="term-tooltip font-bold">
+                            camada MAC
+                            <span class="term-content">
+                                <strong>Media Access Control:</strong> Subcamada do Link de Dados que gerencia o endereçamento físico. No Wi-Fi 7, ela coordena o MLO para enviar dados por várias bandas ao mesmo tempo.
+                            </span>
+                        </span>: 
+                        Transmite pacotes por múltiplas bandas simultaneamente, atenuando a latência por congestionamento.
+                    </p>
+                </div>
+
+                <!-- Sopa de Letrinhas -->
+                <div class="p-8 bg-purple-50 rounded-2xl border border-purple-100 shadow-sm">
+                    <h3 class="font-bold text-purple-700 text-xl mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="18" r="2"></circle>
+                                <path d="M12 14c-1.6 0-3-.6-4.1-1.6l-1.4 1.4C8.1 15.3 10 16 12 16s3.9-.7 5.5-2.2l-1.4-1.4c-1.1 1-2.5 1.6-4.1 1.6z"></path>
+                                <path d="M12 10c-2.7 0-5.2 1.1-7.1 2.9L3.5 11.5c2.3-2.3 5.5-3.5 8.5-3.5s6.2 1.2 8.5 3.5l-1.4 1.4c-1.9-1.8-4.4-2.9-7.1-2.9z"></path>
+                                <path d="M12 6c-3.8 0-7.3 1.5-9.9 4l-1.4-1.4C3.6 5.8 7.6 4 12 4s8.4 1.8 11.3 4.6l-1.4 1.4C19.3 7.5 15.8 6 12 6z"></path>
+                            </svg>
+                        </span>
+                        Evolução do Wi-Fi: sopa de letrinhas
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 bg-white rounded-2xl border border-purple-100 shadow-sm">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Banda: 2.4 + 5GHz</div>
+                            <h5 class="text-lg font-black text-slate-800 mb-2">Wi-Fi 6</h5>
+                            <p class="text-xs text-slate-500 leading-relaxed">Consolidação do padrão AX. Focado em eficiência em redes congestionadas. Bandas apenas de 2,4GHz e 5GHz.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-2xl border border-purple-100 shadow-sm">
+                            <div class="text-[10px] font-bold text-brand-500 uppercase mb-1">Banda: 2.4 + 5 + 6GHz</div>
+                            <h5 class="text-lg font-black text-slate-800 mb-2">Wi-Fi 6E</h5>
+                            <p class="text-xs text-slate-500 leading-relaxed">Abre a via expressa de 6GHz. No entanto, o uso das bandas é alternado (Single-Link).</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-2xl border border-purple-100 shadow-sm">
+                            <div class="text-[10px] font-bold text-orange-500 uppercase mb-1">Otimização Vendor</div>
+                            <h5 class="text-lg font-black text-slate-800 mb-2">Wi-Fi 6 Plus</h5>
+                            <p class="text-xs text-slate-500 leading-relaxed">Focado em canais de 160MHz e maior potência de transmissão específica.</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-2xl border border-brand-500 shadow-sm">
+                            <div class="text-[10px] font-bold text-brand-500 uppercase mb-1">Banda: 2.4 + 5 + 6GHz</div>
+                            <h5 class="text-lg font-black text-slate-800 mb-2">Wi-Fi 7</h5>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">Incorpora o MLO: agrega bandas simultaneamente para latência mínima e desempenho de fibra.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4 text-left">
+            <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">O que tem no Mercado</h3>
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-100 px-3 py-1 rounded italic">Seleção Técnica: Backhaul 4x4 & Wi-Fi 7</span>
+        </div>
+
+        <section class="mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-panel rounded-2xl p-6 shadow-sm text-left">
+                    <h3 class="font-bold text-slate-900 mb-4 text-[10px] tracking-widest text-slate-400 text-center uppercase">Capacidade de Entrega (Gbps)</h3>
+                    <div class="chart-container"><canvas id="perfChart"></canvas></div>
+                </div>
+                <div class="glass-panel rounded-2xl p-6 shadow-sm text-left">
+                    <h3 class="font-bold text-slate-900 mb-6 uppercase text-[10px] tracking-widest text-slate-400 text-center uppercase">Preço versus Performance</h3>
+                    <div class="chart-container"><canvas id="costChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left" id="product-grid"></div>
+
+        <!-- Conclusão -->
+        <section class="mb-16 text-left" id="conclusion-section">
+            <div class="p-10 bg-slate-900 rounded-[2rem] border border-slate-800 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                
+                <h2 class="text-3xl font-black mb-8 border-l-4 border-brand-500 pl-6 uppercase tracking-tight">Conclusão</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div>
+                        <h4 class="text-brand-500 font-bold uppercase text-xs tracking-widest mb-4">Melhor Custo x Benefício</h4>
+                        <p class="text-lg font-bold text-white mb-4">Huawei WiFi Mesh 7</p>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                            Pelos preços encontrados recentemente (R$ 450), o Huawei WiFi Mesh 7 é imbatível. Oferece um duto de backhaul **MIMO 4x4 físico** robusto, ideal para vencer paredes de alvenaria.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-brand-500 font-bold uppercase text-xs tracking-widest mb-4">Mudar de casa antes de o trocar</h4>
+                        <p class="text-lg font-bold text-white mb-4">TP-Link Deco BE75</p>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                            O BE75 traz o benefício real do Wi-Fi 7 (Tri-Band e MLO) com hardware **MIMO 4x4**. É a escolha para quem quer longevidade tecnológica absoluta.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="detailed-comparison" class="hidden mt-12 pt-8 border-t border-slate-800">
+                    <h3 class="text-xl font-bold mb-6 text-brand-500 uppercase">Huawei Mesh 7 vs Deco BE75</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-800/80 text-brand-500 uppercase text-[10px] tracking-widest">
+                                <tr>
+                                    <th class="p-4 border-b border-slate-700">Recurso</th>
+                                    <th class="p-4 border-b border-slate-700">Huawei Mesh 7</th>
+                                    <th class="p-4 border-b border-slate-700">TP-Link Deco BE75</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-300">
+                                <tr>
+                                    <td class="p-4 border-b border-slate-800 font-bold">Investimento Sugerido</td>
+                                    <td class="p-4 border-b border-slate-800 text-brand-500 font-bold">R$ 450 (unid)</td>
+                                    <td class="p-4 border-b border-slate-800 text-amber-400 font-bold">~R$ 5.400 (par)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 border-b border-slate-800 font-bold">MIMO (Antenas)</td>
+                                    <td class="p-4 border-b border-slate-800 text-brand-500 font-bold">4x4 (Físico)</td>
+                                    <td class="p-4 border-b border-slate-800 text-brand-500 font-bold">4x4 (Físico)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 border-b border-slate-800 font-bold">Tecnologia</td>
+                                    <td class="p-4 border-b border-slate-800">Wi-Fi 6 Plus</td>
+                                    <td class="p-4 border-b border-slate-800 text-brand-500 font-bold">Wi-Fi 7 (MLO)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-4 border-b border-slate-800 font-bold">Backhaul Throughput</td>
+                                    <td class="p-4 border-b border-slate-800">4.8 Gbps</td>
+                                    <td class="p-4 border-b border-slate-800 text-brand-500 font-black italic">10 Gbps (via 6GHz)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-slate-800 flex flex-col items-center gap-6 text-center">
+                    <button id="toggle-comparison" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest transition-all">
+                        Ver comparativo detalhado
+                    </button>
+                    
+                    <span class="text-white text-xs md:text-sm block mt-6 text-center max-w-4xl leading-relaxed font-bold italic opacity-80">
+                        *O Deco BE85 continua a ser o melhor em performance bruta, mas os achados de ML tornam o Huawei e o Acer as melhores escolhas financeiras.
+                    </span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-20 py-16 bg-slate-900 text-white border-t border-slate-800 text-left">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
+                
+                <!-- Coluna 1: Funções do Roteador -->
+                <div>
+                    <h5 class="text-white font-bold mb-4 uppercase text-xs tracking-widest">FUNÇÕES DO ROTEADOR</h5>
+                    <div class="text-xs leading-relaxed text-white space-y-3">
+                        <p>É o cérebro da rede:</p>
+                        <ul class="list-disc pl-4 space-y-2">
+                            <li>Gerencia o tráfego, decidindo o melhor caminho para o destino.</li>
+                            <li>O roteador central 
+                                <span class="term-tooltip text-brand-500 font-bold">distribui os endereços IPs
+                                    <span class="term-content">
+                                        <strong>DHCP (Dynamic Host Protocol)</strong> é o serviço que faz a distribution automática de configurações de rede para os aparelhos. É como a recepção de um hotel entregando o número do quarto e dizendo por qual corredor você passa e onde fica a saída.
+                                    </span>
+                                </span> para os dispositivos.
+                            </li>
+                            <li>Separa a sua rede local da "Infernet", permitindo configurações de segurança, tais como bloqueio de sites maliciosos, ataques de hackers, 
+                                <span class="term-tooltip font-bold text-brand-500">controle parental
+                                    <span class="term-content">
+                                        O seu filho(a) passa a madrugada em claro no Instagram ou jogando LoL? Bloqueie o acesso dele(a) à internet a partir das 22 horas.
+                                    </span>
+                                </span>. Já ouviu falar nisso: é o Firewall.
+                            </li>
+                            <li>Receba o combo visitas e a pergunta "Qual é a senha do Wi-Fi?". Então crie uma rede isolada para elas. Afinal, os seus convidados não devem configurar a sua Alexa nem a impressora da casa.</li>
+                            <li>Priorização de tráfego: caso o PlayStation esteja monopolizando toda a banda contratada com a operadora e prejudique a sua videoconferência, estabeleça uma velocidade máxima para o videogame; é o <strong>QoS (Quality of Service)</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Topologias de Rede -->
+                <div>
+                    <h5 class="text-white font-bold mb-4 uppercase text-xs tracking-widest">TOPOLOGIAS DE REDE</h5>
+                    <div class="text-xs leading-relaxed text-white space-y-3">
+                        <p>Refere-se ao arranjo dos nós:</p>
+                        <ul class="list-disc pl-4 space-y-2">
+                            <li>Na <div class="footer-img-popup">Topologia Estrela<div class="footer-img-content">
+                                <img src="https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/star_topology.png" alt="Topologia Estrela" class="rounded-lg">
+                            </div></div>, os satélites falam direto com o Nó Principal (Prós: menor latência e maior estabilidade; Contra: alcance limitado ao centro).</li>
+                            <li>Na <div class="footer-img-popup">Topologia em Cadeia (Daisy Chain)<div class="footer-img-content">
+                                <img src="https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/daisy_chain_topology.png" alt="Topologia em Cadeia" class="rounded-lg">
+                            </div></div>, um nó se liga ao outro em fila (Pró: vence grandes distâncias lineares; Contra: cada "salto" extra reduz a velocidade e se um nó cai, derruba os seguintes).</li>
+                            <li>Repare que na topologia estrela os roteadores estão ligados por cabos de rede. Na topologia em cadeia eles se interligam por um backhaul wireless. É sempre preferível a interligação por cabo.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Ligação à Provedora -->
+                <div>
+                    <h5 class="text-white font-bold mb-4 uppercase text-xs tracking-widest">LIGAÇÃO À PROVEDORA INTERNET</h5>
+                    <div class="text-[11px] leading-relaxed text-white">
+                        <ul class="list-disc pl-4 space-y-3">
+                            <li>No Rio, a oferta de internet banda larga limita-se a Claro e VIVO. Mesmo que apareça no seu escaninho de correspondência um flyer de alguma prestadora de menor porte com preço mais barato e velocidade maior, não é recomendável.</li>
+                            <li>Entre Claro e VIVO não existe melhor; existe a menos pior. E isso vai depender do seu edifício; ele pode ser melhor atendido pela Claro e o prédio vizinho pela VIVO (ou vice-versa). Você não mora na Escandinávia.</li>
+                            <li>
+                                Com relação à Claro (antiga NET-Virtua) cabe uma observação: ainda atende muitos edifícios com uma rede híbrida; isto é; o sinal sai da estação em fibra e, à medida que vai sendo feita a distribuição, chega em sua casa em 
+                                <span class="term-tooltip font-bold text-brand-500">cabo coaxial
+                                    <span class="term-content">Essa infraestrutura se chama HFC — Hybrid Fiber Coaxial</span>
+                                </span>.<br>
+                                Ela está migrando para infraestrutura 
+                                <span class="term-tooltip font-bold text-brand-500">100% fibra
+                                    <span class="term-content">FTTH — Fiber To The Home</span>
+                                </span>. Você precisa ir a uma loja da Claro (não vá a franqueada) para saber. Pergunte se seu endereço é atendido por HFC ou já é 
+                                <span class="term-tooltip font-bold text-brand-500">"GPON"
+                                    <span class="term-content">GPON significa Gigabit Passive Optical Network e é como a Claro chama a rede 100% fibra.</span>
+                                </span>.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const routerData = [
+            { 
+                id: 1, name: "TP-Link Deco BE85", region: "Brasil", wifi: "Wi-Fi 7", mimo: "4x4", backhaul: 11.5, price: 10, total: 22.0, 
+                url: "https://www.tp-link.com/br/home-networking/deco/deco-be85/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Deco_BE85.png",
+                desc: "Top performance. Hardware 4x4 total para interligar os nós com 10Gbps reais.",
+                prices: { BR: "A definir" }, unit: "PAR (2 UNIDADES)"
+            },
+            { 
+                id: 10, name: "TP-Link Deco BE75", region: "Brasil", wifi: "Wi-Fi 7", mimo: "4x4", backhaul: 11.5, price: 8, total: 17.0, 
+                url: "https://www.tp-link.com/pt/home-networking/deco/deco-be75/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Deco_BE75.jpg",
+                desc: "Vantagens: Wi-Fi 7 Tri-Band, MLO e antenas 4x4. Longevidade tecnológica garantida.",
+                prices: { BR: "5.400" }, unit: "PAR (2 UNIDADES)"
+            },
+            { 
+                id: 3, name: "Huawei WiFi Mesh 7", region: "Brasil", wifi: "Wi-Fi 6 Plus", mimo: "4x4", backhaul: 4.8, price: 1, total: 6.6, 
+                url: "https://consumer.huawei.com/br/routers/wifi-mesh7/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Huawei_AX6600_Mesh_7.PNG",
+                desc: "Focado em penetração de sinal em alvenaria. Ótimo custo-benefício 4x4 no Brasil.",
+                prices: { BR: "450" }, unit: "UNIDADE"
+            },
+            { 
+                id: 11, name: "Acer Predator Connect T7", region: "Brasil", wifi: "Wi-Fi 7", mimo: "2x2", backhaul: 5.8, price: 2, total: 10.7, 
+                url: "https://www.acer.com/br-pt/predator/networking/wi-fi/predator-connect-t7-wifi-7-mesh-router/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/acer_predator.png",
+                desc: "Focado em gamers. Traz o Intel Killer Prioritization Engine para latência mínima.",
+                prices: { BR: "650" }, unit: "UNIDADE",
+                obs: 'Obs.: No <a href="https://www.mercadolivre.com.br/roteador-acer-predator-connect-t7-wi-fi-7-de-trs-bandas/p/MLB50678410" target="_blank" class="text-brand-500 font-bold">Mercado Livre</a> encontrei por R$ 650.'
+            },
+            { 
+                id: 4, name: "TP-Link Deco BE65", region: "Brasil", wifi: "Wi-Fi 7", mimo: "2x2", backhaul: 5.8, price: 6, total: 11.0, 
+                url: "https://www.tp-link.com/br/home-networking/deco/deco-be65/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Deco_BE65.png",
+                desc: "Porta de entrada para Wi-Fi 7. 2x2 com MLO para compensar a falta de antenas extras.",
+                prices: { BR: "2.869" }, unit: "PAR (2 UNIDADES)"
+            },
+            { 
+                id: 5, name: "Netgear Orbi 960", region: "EUA", wifi: "Wi-Fi 6E", mimo: "4x4", backhaul: 10.0, price: 9, total: 10.8, 
+                url: "https://www.netgear.com/home/wifi/mesh/rbke963/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Netgear_Orbi_960.png",
+                desc: "Referência premium. Banda exclusiva quad-stream dedicada apenas para o backhaul.",
+                prices: { BR: "14.500" }, unit: "TRIO (3 UNIDADES)" 
+            },
+            { 
+                id: 8, name: "TP-Link Archer BE900", region: "China", wifi: "Wi-Fi 7", mimo: "4x4", backhaul: 11.5, price: 9, total: 24.0, 
+                url: "https://www.tp-link.com/us/home-networking/wifi-router/archer-be900/",
+                img: "https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/Archer_BE900_WiFi_7_Router.png",
+                desc: "Futurista e poderoso. Suporte total a 320MHz e backhaul wireless de performance de fibra.",
+                prices: { BR: "6.990" }, unit: "UNIDADE" 
+            }
+        ];
+
+        let pChart, cChart;
+
+        function initCharts() {
+            const ctxP = document.getElementById('perfChart').getContext('2d');
+            pChart = new Chart(ctxP, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Total Gbps', data: [], backgroundColor: '#e2e8f0', borderRadius: 4 },
+                        { label: 'Backhaul Gbps', data: [], backgroundColor: '#0d9488', borderRadius: 4 }
+                    ]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            const ctxC = document.getElementById('costChart').getContext('2d');
+            cChart = new Chart(ctxC, {
+                type: 'bubble',
+                data: { 
+                    datasets: [{ 
+                        label: 'Eficiência por Fluxos (MIMO)', 
+                        data: [], 
+                        backgroundColor: 'rgba(13, 148, 136, 0.5)', 
+                        borderColor: '#0d9488', 
+                        borderWidth: 2 
+                    }] 
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Backhaul (Gbps)' } },
+                        y: { title: { display: true, text: 'Preço Relativo' }, min: 0, max: 12 }
+                    },
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (c) => routerData[c.dataIndex].name } }
+                    }
+                }
+            });
+        }
+
+        function updateUI() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            
+            routerData.forEach(item => {
+                const combinedBadge = `MIMO ${item.mimo} * ${item.wifi}`;
+                
+                grid.innerHTML += `
+                    <div onclick="window.open('${item.url}', '_blank')" class="glass-panel p-6 rounded-2xl card-clickable flex flex-col h-full border-t-4 border-brand-500">
+                        <div class="w-full h-48 mb-6 bg-white rounded-xl flex items-center justify-center p-4 border border-slate-100 overflow-hidden">
+                            <img src="${item.img}" alt="[Imagem de ${item.name}]" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex justify-start mb-3">
+                            <span class="text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-brand-100 text-brand-700 border border-brand-200 shadow-sm">${combinedBadge}</span>
+                        </div>
+                        <h4 class="text-xl font-black text-slate-900 mb-1 tracking-tight text-left">${item.name}</h4>
+                        <div class="text-[9px] font-bold text-brand-500 uppercase tracking-tighter mb-4 text-left">${item.region}</div>
+                        <p class="text-xs text-slate-500 mb-6 flex-grow leading-relaxed italic text-left">"${item.desc}"</p>
+                        
+                        <div class="p-4 bg-slate-900 rounded-xl mb-4 border border-slate-700">
+                            <div class="flex justify-between text-[11px] text-brand-500 font-black uppercase tracking-widest border-b border-white/10 pb-1 mb-2">
+                                <span>Preço</span>
+                                <span>Quantidade</span>
+                            </div>
+                            <div class="flex justify-between items-center text-white font-black text-[11px]">
+                                <span>R$ ${item.prices.BR}</span>
+                                <span class="uppercase tracking-tighter">${item.unit}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-auto text-left">
+                            <div class="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 mb-2">
+                                <span>Link Backhaul</span>
+                                <span class="text-brand-500">${item.backhaul} Gbps</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-brand-500 h-full" style="width: ${(item.backhaul / 12) * 100}%"></div>
+                            </div>
+                        </div>
+                        ${item.obs ? `<p class="mt-2 text-[9px] text-slate-400 italic text-left">${item.obs}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            pChart.data.labels = routerData.map(d => d.name.replace('TP-Link ', ''));
+            pChart.data.datasets[0].data = routerData.map(d => d.total);
+            pChart.data.datasets[1].data = routerData.map(d => d.backhaul);
+            pChart.update();
+
+            cChart.data.datasets[0].data = routerData.map(d => ({ x: d.backhaul, y: d.price, r: d.mimo === '4x4' ? 12 : 6 }));
+            cChart.update();
+        }
+
+        window.onload = () => { 
+            initCharts(); 
+            updateUI(); 
+            const btn = document.getElementById('toggle-comparison');
+            const table = document.getElementById('detailed-comparison');
+            if(btn && table) {
+                btn.addEventListener('click', () => {
+                    table.classList.toggle('hidden');
+                    btn.innerText = table.classList.contains('hidden') ? 'Ver comparativo detalhado' : 'Esconder comparativo';
+                });
+            }
+        };
+    </script>
+</body>
+</html>
