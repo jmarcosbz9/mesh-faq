@@ -166,48 +166,53 @@
                             <svg id="cmeshSvg" width="100%" viewBox="0 0 440 220" role="img">
                                 <title>Passagem de bastão entre roteadores mesh</title>
                                 <desc>Pessoa caminha da sala ao escritório; cada roteador assume automaticamente.</desc>
-                                <rect x="10" y="12" width="420" height="188" rx="5" fill="none" stroke="rgba(136,19,55,0.2)" stroke-width="1.5"/>
-                                <line x1="157" y1="12" x2="157" y2="200" stroke="rgba(136,19,55,0.2)" stroke-width="1.5"/>
-                                <line x1="304" y1="12" x2="304" y2="200" stroke="rgba(136,19,55,0.2)" stroke-width="1.5"/>
-                                <line x1="157" y1="95" x2="157" y2="135" stroke="#fff1f2" stroke-width="4"/>
-                                <line x1="304" y1="95" x2="304" y2="135" stroke="#fff1f2" stroke-width="4"/>
-                                <text x="83"  y="192" text-anchor="middle" font-size="11" fill="rgba(136,19,55,0.4)">Sala</text>
-                                <text x="230" y="192" text-anchor="middle" font-size="11" fill="rgba(136,19,55,0.4)">Quarto</text>
-                                <text x="372" y="192" text-anchor="middle" font-size="11" fill="rgba(136,19,55,0.4)">Escritório</text>
-                                <!-- coberturas -->
-                                <circle cx="83"  cy="110" r="55" fill="#378ADD" fill-opacity="0.06" stroke="#378ADD" stroke-width="0.5" stroke-opacity="0.2"/>
-                                <circle cx="230" cy="110" r="55" fill="#1D9E75" fill-opacity="0.06" stroke="#1D9E75" stroke-width="0.5" stroke-opacity="0.2"/>
-                                <circle cx="372" cy="110" r="55" fill="#D85A30" fill-opacity="0.06" stroke="#D85A30" stroke-width="0.5" stroke-opacity="0.2"/>
+                                <!-- fundo preto geral -->
+                                <rect x="10" y="12" width="420" height="188" rx="5" fill="#0f172a"/>
+                                <!-- paredes (brancas) -->
+                                <rect x="10" y="12" width="420" height="188" rx="5" fill="none" stroke="white" stroke-width="1.5"/>
+                                <line x1="157" y1="12" x2="157" y2="200" stroke="white" stroke-width="1.5"/>
+                                <line x1="304" y1="12" x2="304" y2="200" stroke="white" stroke-width="1.5"/>
+                                <!-- portas (aberturas no fundo preto) -->
+                                <line x1="157" y1="95" x2="157" y2="135" stroke="#0f172a" stroke-width="4"/>
+                                <line x1="304" y1="95" x2="304" y2="135" stroke="#0f172a" stroke-width="4"/>
+                                <!-- labels cômodos -->
+                                <text x="83"  y="192" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.4)">Sala</text>
+                                <text x="230" y="192" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.4)">Quarto</text>
+                                <text x="372" y="192" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.4)">Escritório</text>
+                                <!-- coberturas Wi-Fi (pastel mantido) -->
+                                <circle cx="83"  cy="110" r="55" fill="#7BB8E8" fill-opacity="0.12" stroke="#7BB8E8" stroke-width="0.8" stroke-opacity="0.4"/>
+                                <circle cx="230" cy="110" r="55" fill="#6DD4AE" fill-opacity="0.12" stroke="#6DD4AE" stroke-width="0.8" stroke-opacity="0.4"/>
+                                <circle cx="372" cy="110" r="55" fill="#F4956A" fill-opacity="0.12" stroke="#F4956A" stroke-width="0.8" stroke-opacity="0.4"/>
                                 <!-- pulsos -->
-                                <circle id="cmpA" cx="83"  cy="46" r="22" fill="none" stroke="#378ADD" stroke-width="1.5" class="cmpulse"/>
-                                <circle id="cmpB" cx="230" cy="46" r="22" fill="none" stroke="#1D9E75" stroke-width="1.5" class="cmpulse" style="animation-play-state:paused;opacity:0"/>
-                                <circle id="cmpC" cx="372" cy="46" r="22" fill="none" stroke="#D85A30" stroke-width="1.5" class="cmpulse" style="animation-play-state:paused;opacity:0"/>
-                                <!-- roteadores -->
-                                <rect x="61"  y="28" width="44" height="36" rx="5" fill="#fce7f3" stroke="#378ADD" stroke-width="1.5"/>
-                                <text x="83"  y="42" text-anchor="middle" font-size="9"  fill="#185FA5">Router</text>
-                                <text x="83"  y="55" text-anchor="middle" font-size="13" fill="#185FA5" font-weight="500">A</text>
-                                <rect x="208" y="28" width="44" height="36" rx="5" fill="#fce7f3" stroke="#1D9E75" stroke-width="1.5"/>
-                                <text x="230" y="42" text-anchor="middle" font-size="9"  fill="#0F6E56">Router</text>
-                                <text x="230" y="55" text-anchor="middle" font-size="13" fill="#0F6E56" font-weight="500">B</text>
-                                <rect x="350" y="28" width="44" height="36" rx="5" fill="#fce7f3" stroke="#D85A30" stroke-width="1.5"/>
-                                <text x="372" y="42" text-anchor="middle" font-size="9"  fill="#993C1D">Router</text>
-                                <text x="372" y="55" text-anchor="middle" font-size="13" fill="#993C1D" font-weight="500">C</text>
-                                <!-- backbone -->
-                                <line x1="105" y1="46" x2="208" y2="46" stroke="rgba(136,19,55,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
-                                <line x1="252" y1="46" x2="350" y2="46" stroke="rgba(136,19,55,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
-                                <!-- conexão -->
-                                <line id="cmConnLine" x1="83" y1="112" x2="83" y2="64" stroke="#378ADD" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.8"/>
+                                <circle id="cmpA" cx="83"  cy="46" r="22" fill="none" stroke="#7BB8E8" stroke-width="1.5" class="cmpulse"/>
+                                <circle id="cmpB" cx="230" cy="46" r="22" fill="none" stroke="#6DD4AE" stroke-width="1.5" class="cmpulse" style="animation-play-state:paused;opacity:0"/>
+                                <circle id="cmpC" cx="372" cy="46" r="22" fill="none" stroke="#F4956A" stroke-width="1.5" class="cmpulse" style="animation-play-state:paused;opacity:0"/>
+                                <!-- roteadores: fundo branco, outline e texto coloridos -->
+                                <rect x="61"  y="28" width="44" height="36" rx="5" fill="white" stroke="#7BB8E8" stroke-width="2"/>
+                                <text x="83"  y="42" text-anchor="middle" font-size="9"  fill="#7BB8E8" font-weight="500">Router</text>
+                                <text x="83"  y="55" text-anchor="middle" font-size="13" fill="#7BB8E8" font-weight="700">A</text>
+                                <rect x="208" y="28" width="44" height="36" rx="5" fill="white" stroke="#6DD4AE" stroke-width="2"/>
+                                <text x="230" y="42" text-anchor="middle" font-size="9"  fill="#6DD4AE" font-weight="500">Router</text>
+                                <text x="230" y="55" text-anchor="middle" font-size="13" fill="#6DD4AE" font-weight="700">B</text>
+                                <rect x="350" y="28" width="44" height="36" rx="5" fill="white" stroke="#F4956A" stroke-width="2"/>
+                                <text x="372" y="42" text-anchor="middle" font-size="9"  fill="#F4956A" font-weight="500">Router</text>
+                                <text x="372" y="55" text-anchor="middle" font-size="13" fill="#F4956A" font-weight="700">C</text>
+                                <!-- backbone dashed -->
+                                <line x1="105" y1="46" x2="208" y2="46" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+                                <line x1="252" y1="46" x2="350" y2="46" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4,3"/>
+                                <!-- conexão ativa -->
+                                <line id="cmConnLine" x1="83" y1="112" x2="83" y2="64" stroke="#7BB8E8" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.9"/>
                                 <!-- pessoa -->
                                 <g id="cmPerson" transform="translate(83,112)">
-                                    <circle r="13" fill="#7F77DD" opacity="0.92"/>
+                                    <circle r="13" fill="#7F77DD"/>
                                     <circle cy="-5" r="4.5" fill="white"/>
                                     <path d="M-4.5 1 Q0 8 4.5 1" fill="white"/>
                                     <rect x="6" y="-3.5" width="6" height="9" rx="1.5" fill="white" opacity="0.9"/>
                                     <rect x="7.2" y="-2.2" width="3.5" height="5.5" rx="0.5" fill="#7F77DD"/>
                                 </g>
                             </svg>
-                            <div class="cmesh-caption">
-                                <div class="cmesh-dot" id="cmDot" style="background:#378ADD"></div>
+                            <div class="cmesh-caption" style="background:#0f172a; border-color:rgba(255,255,255,0.12); color:white;">
+                                <div class="cmesh-dot" id="cmDot" style="background:#7BB8E8"></div>
                                 <span id="cmCaption">Conectado ao <strong>Roteador da Sala</strong> — sinal excelente.</span>
                             </div>
                             <script>
@@ -218,14 +223,14 @@
                                 const dot    = document.getElementById('cmDot');
                                 const pp     = [document.getElementById('cmpA'), document.getElementById('cmpB'), document.getElementById('cmpC')];
                                 const stops  = [
-                                    { x:83,  y:112, rx:83,  ry:64, color:'#378ADD', ai:0, msg:'Conectado ao <strong>Roteador da Sala</strong> — sinal excelente.' },
-                                    { x:157, y:112, rx:83,  ry:64, color:'#378ADD', ai:0, msg:'Aproximando-se da porta — ainda com o <strong>Roteador A</strong>.' },
-                                    { x:200, y:112, rx:230, ry:64, color:'#1D9E75', ai:1, msg:'&#x1F501; <strong>Passagem de bastão</strong> — Roteador do Quarto assume.' },
-                                    { x:230, y:112, rx:230, ry:64, color:'#1D9E75', ai:1, msg:'No quarto — <strong>Roteador B</strong> com sinal ótimo.' },
-                                    { x:304, y:112, rx:230, ry:64, color:'#1D9E75', ai:1, msg:'Saindo do quarto — ainda com o <strong>Roteador B</strong>.' },
-                                    { x:340, y:112, rx:372, ry:64, color:'#D85A30', ai:2, msg:'&#x1F501; <strong>Passagem de bastão</strong> — Roteador do Escritório assume.' },
-                                    { x:372, y:112, rx:372, ry:64, color:'#D85A30', ai:2, msg:'No escritório — <strong>Roteador C</strong> entrega sinal pleno.' },
-                                    { x:372, y:112, rx:372, ry:64, color:'#D85A30', ai:2, msg:'Sem queda, sem troca manual. Isso é <strong>mesh</strong>.' }
+                                    { x:83,  y:112, rx:83,  ry:64, color:'#7BB8E8', ai:0, msg:'Conectado ao <strong>Roteador da Sala</strong> — sinal excelente.' },
+                                    { x:157, y:112, rx:83,  ry:64, color:'#7BB8E8', ai:0, msg:'Aproximando-se da porta — ainda com o <strong>Roteador A</strong>.' },
+                                    { x:200, y:112, rx:230, ry:64, color:'#6DD4AE', ai:1, msg:'&#x1F501; <strong>Passagem de bastão</strong> — Roteador do Quarto assume.' },
+                                    { x:230, y:112, rx:230, ry:64, color:'#6DD4AE', ai:1, msg:'No quarto — <strong>Roteador B</strong> com sinal ótimo.' },
+                                    { x:304, y:112, rx:230, ry:64, color:'#6DD4AE', ai:1, msg:'Saindo do quarto — ainda com o <strong>Roteador B</strong>.' },
+                                    { x:340, y:112, rx:372, ry:64, color:'#F4956A', ai:2, msg:'&#x1F501; <strong>Passagem de bastão</strong> — Roteador do Escritório assume.' },
+                                    { x:372, y:112, rx:372, ry:64, color:'#F4956A', ai:2, msg:'No escritório — <strong>Roteador C</strong> entrega sinal pleno.' },
+                                    { x:372, y:112, rx:372, ry:64, color:'#F4956A', ai:2, msg:'Sem queda, sem troca manual. Isso é <strong>mesh</strong>.' }
                                 ];
                                 let step = 0;
                                 const DUR = 1300;
