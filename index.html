@@ -484,7 +484,7 @@
                     <button id="toggle-comparison" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-black px-8 py-3 rounded-full text-xs uppercase tracking-widest transition-all">
                         Ver comparativo detalhado
                     </button>
-                    <span class="text-slate-500 text-xs block mt-2 italic">
+                    <span class="text-white text-sm block mt-2 italic">
                         Preços pesquisados em abril/2026 · Câmbio R$ 5,85/USD
                     </span>
                 </div>
@@ -721,22 +721,22 @@
                                 <span>Quantidade</span>
                             </div>
                             <!-- Linha Brasil -->
-                            <div class="flex justify-between items-center text-white text-[12px] font-black mb-1">
-                                <div class="flex items-center gap-1.5">
-                                    <span title="Brasil">🇧🇷</span>
+                            <div class="flex justify-between items-center text-white text-sm font-black mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl" title="Brasil">🇧🇷</span>
                                     <span>${item.priceBR ? 'R$ ' + item.priceBR.toLocaleString('pt-BR') : (item.priceBRLabel || '—')}</span>
                                 </div>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-tighter">${item.unit}</span>
+                                <span class="text-xs text-slate-300 uppercase tracking-tighter font-black">${item.unit}</span>
                             </div>
-                            <div class="text-[9px] text-slate-500 mb-2 pl-5">${item.vendorBR}</div>
+                            <div class="text-[10px] text-slate-500 mb-2 pl-7">${item.vendorBR}</div>
                             <!-- Linha EUA -->
-                            <div class="flex justify-between items-center text-slate-300 text-[11px] font-bold border-t border-white/5 pt-2 mt-1">
-                                <div class="flex items-center gap-1.5">
-                                    <span title="EUA">🇺🇸</span>
+                            <div class="flex justify-between items-center text-slate-200 text-xs font-bold border-t border-white/5 pt-2 mt-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl" title="EUA">🇺🇸</span>
                                     <span>${item.priceUSA ? 'US$ ' + item.priceUSA.toFixed(2) + ' → R$ ' + (item.priceUSA * USD_BRL).toLocaleString('pt-BR', {maximumFractionDigits:0}) : item.vendorUSA}</span>
                                 </div>
                             </div>
-                            <div class="text-[9px] text-slate-500 pl-5">${item.priceUSA ? item.vendorUSA : ''}</div>
+                            <div class="text-[10px] text-slate-500 pl-7">${item.priceUSA ? item.vendorUSA : ''}</div>
                         </div>
 
                         <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 mt-auto text-left">
