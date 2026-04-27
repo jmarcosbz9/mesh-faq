@@ -98,6 +98,60 @@
             visibility: visible;
             opacity: 1;
         }
+
+        /* Lightbox */
+        #img-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        #img-lightbox.open { display: flex; }
+        #img-lightbox .lb-box {
+            background: #ffffff;
+            border: 2px solid #0f766e;
+            border-radius: 16px;
+            padding: 20px;
+            width: 860px;
+            max-width: 92vw;
+            max-height: 84vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        #img-lightbox img {
+            max-width: 100%;
+            max-height: 62vh;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+        #img-lightbox .lb-caption {
+            font-size: 14px;
+            color: #134e4a;
+            font-weight: 600;
+            text-align: center;
+        }
+        #img-lightbox .lb-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #0f766e;
+            cursor: pointer;
+            font-weight: 900;
+            line-height: 1;
+        }
+        #img-lightbox .lb-close:hover { color: #134e4a; }
+        .footer-img-popup { cursor: pointer; }
     </style>
 </head>
 <body class="antialiased pb-10">
@@ -776,5 +830,42 @@
             }
         };
     </script>
+    <!-- Lightbox -->
+    <div id="img-lightbox" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+        <div class="lb-box">
+            <button class="lb-close" id="lb-close" aria-label="Fechar">✕</button>
+            <img id="lb-img" src="" alt="">
+            <div class="lb-caption" id="lb-caption"></div>
+        </div>
+    </div>
+
+    <script>
+        // Lightbox para footer-img-popup
+        const lightbox  = document.getElementById('img-lightbox');
+        const lbImg     = document.getElementById('lb-img');
+        const lbCaption = document.getElementById('lb-caption');
+        const lbClose   = document.getElementById('lb-close');
+
+        document.querySelectorAll('.footer-img-popup').forEach(popup => {
+            popup.addEventListener('click', e => {
+                const imgEl = popup.querySelector('.footer-img-content img');
+                if (!imgEl) return;
+                lbImg.src = imgEl.src;
+                lbImg.alt = imgEl.alt;
+                lbCaption.textContent = imgEl.alt;
+                lightbox.classList.add('open');
+                e.stopPropagation();
+            });
+        });
+
+        lbClose.addEventListener('click', () => lightbox.classList.remove('open'));
+        lightbox.addEventListener('click', e => {
+            if (e.target === lightbox) lightbox.classList.remove('open');
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') lightbox.classList.remove('open');
+        });
+    </script>
+
 </body>
 </html>
