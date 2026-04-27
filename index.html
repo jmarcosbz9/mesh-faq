@@ -717,7 +717,7 @@
                         
                         <div class="p-4 bg-slate-900 rounded-xl mb-4 border border-slate-700">
                             <!-- Header -->
-                            <div class="flex justify-between text-[11px] text-brand-500 font-black uppercase tracking-widest border-b border-white/10 pb-1 mb-3">
+                            <div class="flex justify-between text-sm text-brand-500 font-black uppercase tracking-widest border-b border-white/10 pb-2 mb-3">
                                 <span>Preço</span>
                                 <span>${item.unit}</span>
                             </div>
@@ -726,15 +726,15 @@
                                 <span class="text-xl" title="Brasil">🇧🇷</span>
                                 <span>${item.priceBR ? 'R$ ' + item.priceBR.toLocaleString('pt-BR') : (item.priceBRLabel || '—')}</span>
                             </div>
-                            <div class="text-[10px] text-slate-500 mb-3 pl-8">${item.vendorBR}</div>
+                            <div class="text-xs text-white font-semibold mb-3 pl-8">${item.vendorBR}</div>
                             <!-- Linha EUA -->
                             <div class="border-t border-white/5 pt-3">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="text-xl" title="EUA">🇺🇸</span>
-                                    <span class="text-[10px] text-slate-400 italic">Quanto um americano paga pelo mesmo equipamento</span>
+                                    <span class="text-sm text-white font-black">Quanto um americano paga pelo mesmo equipamento</span>
                                 </div>
-                                <div class="text-xs text-slate-200 font-bold pl-8 mb-1">${item.priceUSA ? 'US$ ' + item.priceUSA.toFixed(2) + ' → R$ ' + (item.priceUSA * USD_BRL).toLocaleString('pt-BR', {maximumFractionDigits:0}) : '<span class="text-slate-500 font-normal">' + item.vendorUSA + '</span>'}</div>
-                                <div class="text-[10px] text-slate-500 pl-8">${item.priceUSA ? item.vendorUSA : ''}</div>
+                                <div class="text-sm text-slate-200 font-bold pl-8 mb-1">${item.priceUSA ? 'US$ ' + item.priceUSA.toFixed(2) + ' → R$ ' + (item.priceUSA * USD_BRL).toLocaleString('pt-BR', {maximumFractionDigits:0}) : '<span class="text-slate-400 font-normal text-xs">' + item.vendorUSA + '</span>'}</div>
+                                <div class="text-xs text-white font-semibold pl-8">${item.priceUSA ? item.vendorUSA : ''}</div>
                             </div>
                         </div>
 
