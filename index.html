@@ -116,30 +116,40 @@
             border: 2px solid #0f766e;
             border-radius: 16px;
             padding: 20px;
-            width: 700px;
+            width: 860px;
             max-width: 92vw;
             max-height: 90vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
             position: relative;
         }
         #img-lightbox .lb-img-wrap {
-            overflow-y: auto;
-            overflow-x: hidden;
-            max-height: calc(90vh - 100px);
+            overflow: hidden;
             width: 100%;
-            display: flex;
-            justify-content: center;
+            max-height: calc(90vh - 90px);
             border-radius: 8px;
+            cursor: grab;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            position: relative;
+        }
+        #img-lightbox .lb-img-wrap.grabbing {
+            cursor: grabbing;
         }
         #img-lightbox img {
-            width: 100%;
+            max-width: 100%;
             height: auto;
             border-radius: 8px;
             display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+            transform-origin: top center;
+            will-change: transform;
+            pointer-events: none;
         }
         #img-lightbox .lb-caption {
             font-size: 14px;
@@ -844,7 +854,7 @@
     <div id="img-lightbox" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
         <div class="lb-box">
             <button class="lb-close" id="lb-close" aria-label="Fechar">✕</button>
-            <div class="lb-img-wrap">
+            <div class="lb-img-wrap" id="lb-wrap">
                 <img id="lb-img" src="" alt="">
             </div>
             <div class="lb-caption" id="lb-caption"></div>
@@ -852,12 +862,14 @@
     </div>
 
     <script>
-        // Lightbox para footer-img-popup
+        // Lightbox com pan/grab
         const lightbox  = document.getElementById('img-lightbox');
         const lbImg     = document.getElementById('lb-img');
+        const lbWrap    = document.getElementById('lb-wrap');
         const lbCaption = document.getElementById('lb-caption');
         const lbClose   = document.getElementById('lb-close');
 
+        // Open lightbox on click of footer-img-popup
         document.querySelectorAll('.footer-img-popup').forEach(popup => {
             popup.addEventListener('click', e => {
                 const imgEl = popup.querySelector('.footer-img-content img');
@@ -865,17 +877,50 @@
                 lbImg.src = imgEl.src;
                 lbImg.alt = imgEl.alt;
                 lbCaption.textContent = imgEl.alt;
+                // Reset pan
+                translateX = 0; translateY = 0;
+                lbImg.style.transform = 'translate(0px, 0px)';
                 lightbox.classList.add('open');
                 e.stopPropagation();
             });
         });
 
+        // Close on ✕ button
         lbClose.addEventListener('click', () => lightbox.classList.remove('open'));
+
+        // Close on click outside lb-box
         lightbox.addEventListener('click', e => {
             if (e.target === lightbox) lightbox.classList.remove('open');
         });
+
+        // Close on Escape
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') lightbox.classList.remove('open');
+        });
+
+        // Pan / grab functionality
+        let isDragging = false;
+        let startX, startY, translateX = 0, translateY = 0, lastX = 0, lastY = 0;
+
+        lbWrap.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            lbWrap.classList.add('grabbing');
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            lbImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            lbWrap.classList.remove('grabbing');
         });
     </script>
 
