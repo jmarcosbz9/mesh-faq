@@ -611,7 +611,7 @@
                             <li>Na <div class="footer-img-popup">Topologia Estrela<div class="footer-img-content">
                                 <img src="https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/star_topology.png" alt="Topologia Estrela" class="rounded-lg">
                             </div></div>, os satélites falam direto com o Nó Principal (Prós: menor latência e maior estabilidade; Contra: alcance limitado ao centro).</li>
-                            <li>Na <div class="footer-img-popup">Topologia em Cadeia (Daisy Chain)<div class="footer-img-content">
+                            <li>Na <div class="footer-img-popup lb-pannable">Topologia em Cadeia (Daisy Chain)<div class="footer-img-content">
                                 <img src="https://raw.githubusercontent.com/jmarcosbz9/Imagens-Figuras-Icones/main/daisy_chain_topology.png" alt="Topologia em Cadeia" class="rounded-lg">
                             </div></div>, um nó se liga ao outro em fila (Pró: vence grandes distâncias lineares; Contra: cada "salto" extra reduz a velocidade e se um nó cai, derruba os seguintes).</li>
                             <li>Nas figuras acima, na Topologia Estrela os roteadores estão ligados por cabos de rede e a Daisy Chain por um backhaul wireless. Mas poderia ser o contrário; o método de conexão independe da topologia.<br>Mas lembre-se: qualquer que seja a topologia mais adequada ao seu ambiente, a interligação por cabo será sempre preferível.</li>
@@ -870,16 +870,20 @@
         const lbClose   = document.getElementById('lb-close');
 
         // Open lightbox on click of footer-img-popup
+        let isPannable = false;
+
         document.querySelectorAll('.footer-img-popup').forEach(popup => {
             popup.addEventListener('click', e => {
                 const imgEl = popup.querySelector('.footer-img-content img');
                 if (!imgEl) return;
+                isPannable = popup.classList.contains('lb-pannable');
                 lbImg.src = imgEl.src;
                 lbImg.alt = imgEl.alt;
                 lbCaption.textContent = imgEl.alt;
                 // Reset pan
                 translateX = 0; translateY = 0;
                 lbImg.style.transform = 'translate(0px, 0px)';
+                lbWrap.style.cursor = isPannable ? 'grab' : 'default';
                 lightbox.classList.add('open');
                 e.stopPropagation();
             });
@@ -903,6 +907,7 @@
         let startX, startY, translateX = 0, translateY = 0, lastX = 0, lastY = 0;
 
         lbWrap.addEventListener('mousedown', e => {
+            if (!isPannable) return;
             isDragging = true;
             startX = e.clientX - translateX;
             startY = e.clientY - translateY;
@@ -911,7 +916,7 @@
         });
 
         document.addEventListener('mousemove', e => {
-            if (!isDragging) return;
+            if (!isDragging || !isPannable) return;
             translateX = e.clientX - startX;
             translateY = e.clientY - startY;
             lbImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
